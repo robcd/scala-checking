@@ -27,7 +27,7 @@ class Tests extends FunSuite with ShouldMatchers {
     res should equal(0)
   }
 
-  test("left map true") {
+  test("map true") {
     val checked: Checked[Int, String] = Okay(1)
     val res = for {
       a <- checked
@@ -36,7 +36,7 @@ class Tests extends FunSuite with ShouldMatchers {
     } yield b
     res should equal(Okay(2))
     // left.get should equal(2)
-    // left.getOrElse(0) should equal(2)
+    res.getOrElse(0) should equal(2)
     // left.forall(_ == 1) should be(false)
     // left.forall(_ == 2) should be(true)
     // left.exists(_ == 1) should be(false)
@@ -45,7 +45,7 @@ class Tests extends FunSuite with ShouldMatchers {
     // left.toOption should equal(Some(2))
   }
 
-  test("left map false") {
+  test("map false") {
     val checked: Checked[Int, String] = Okay(1)
     val res = for {
       a <- checked
@@ -57,7 +57,7 @@ class Tests extends FunSuite with ShouldMatchers {
     //   left.get
     // }
     // thrown.getMessage should equal("Either.left.value on Right")
-    // left.getOrElse(0) should equal(0)
+    res.getOrElse(0) should equal(0)
     // left.forall(_ == 1) should be(true) // since no elements
     // left.forall(_ == 2) should be(true) // "
     // left.exists(_ == 1) should be(false) // "
@@ -152,7 +152,7 @@ class Tests extends FunSuite with ShouldMatchers {
       c <- gt1(b)
     } yield c
     res should equal(Kayo("n must be > 1: 1"))
-    //right.getOrElse(0) should equal(0)
+    res.getOrElse(0) should equal(0)
   }
 
   test("two generators with map true") {

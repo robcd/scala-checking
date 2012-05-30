@@ -2,6 +2,12 @@ package org.lafros.scala
 
 sealed abstract class Checked[+A, +S] {
   def isOkay: Boolean
+  //def get: A
+  def getOrElse[B >: A](b: => B) = this match {
+    case Okay(a) => a
+    case Kayo(_) => b
+    case OkayAsKayo(_) => b
+  }
   def map[B](f: A => B): Checked[B, S] = this match {
     case Okay(a) => Okay(f(a))
     case Kayo(b) => Kayo(b)
