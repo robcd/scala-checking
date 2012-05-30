@@ -7,6 +7,15 @@ sealed abstract class Checked[+A, +S] {
     case Kayo(b) => Kayo(b)
     case OkayAsKayo(Okay(a)) => OkayAsKayo(Okay(f(a)))
   }
+  def flatMap[B, T >: S](f: A => Checked[B, T]): Checked[B, T] = this match {
+    case Okay(a) => f(a)
+    case Kayo(b) => Kayo(b)
+    case OkayAsKayo(Okay(a)) => f(a) match {
+      case okay @ Okay(_) => OkayAsKayo(okay)
+      case kayo @ Kayo(_) => kayo
+      case okayAsKayo @ OkayAsKayo(_) => okayAsKayo
+    }
+  }
   def foreach[B](f: A => B): Unit = this match {
     case Okay(a) => f(a)
     case Kayo(_) =>
