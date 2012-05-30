@@ -13,8 +13,13 @@ sealed abstract class Checked[+A, +S] {
     case OkayAsKayo(Okay(a)) => f(a) match {
       case okay @ Okay(_) => OkayAsKayo(okay)
       case kayo @ Kayo(_) => kayo
-      case okayAsKayo @ OkayAsKayo(_) => okayAsKayo
+      case kayo @ OkayAsKayo(_) => kayo
     }
+  }
+  def withFilter(p: A => Boolean): Checked[A, S] = this match {
+    case okay @ Okay(a) => if (p(a)) okay else OkayAsKayo(okay)
+    case kayo @ Kayo(b) => kayo
+    case kayo @ OkayAsKayo(_) => kayo
   }
   def foreach[B](f: A => B): Unit = this match {
     case Okay(a) => f(a)
