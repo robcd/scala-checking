@@ -35,7 +35,7 @@ class Tests extends FunSuite with ShouldMatchers {
       if b > 0
     } yield b
     res should equal(Okay(2))
-    // left.get should equal(2)
+    res.get should equal(2)
     res.getOrElse(0) should equal(2)
     // left.forall(_ == 1) should be(false)
     // left.forall(_ == 2) should be(true)
@@ -53,10 +53,10 @@ class Tests extends FunSuite with ShouldMatchers {
       if b < 0
     } yield b
     res should equal(OkayAsKayo(Okay(2)))
-    // val thrown = intercept[NoSuchElementException] {
-    //   left.get
-    // }
-    // thrown.getMessage should equal("Either.left.value on Right")
+    val thrown = intercept[NoSuchElementException] {
+      res.get
+    }
+    thrown.getMessage should equal("OkayAsKayo.get")
     res.getOrElse(0) should equal(0)
     // left.forall(_ == 1) should be(true) // since no elements
     // left.forall(_ == 2) should be(true) // "
