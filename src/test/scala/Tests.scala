@@ -56,19 +56,19 @@ class Tests extends FunSuite with ShouldMatchers {
       b = a + 1
       if b < 0
     } yield b
-    res.toString should equal("OkayAsKayo(Okay(2))")
+    res.toString should equal("None(Okay(2))")
     ;{
       val thrown = intercept[NoSuchElementException] {
         res.get
       }
-      thrown.getMessage should equal("OkayAsKayo.get")
+      thrown.getMessage should equal("None.get")
     }
     res.getOrElse(0) should equal(0)
     ;{
       val thrown = intercept[NoSuchElementException] {
         res.reason
       }
-      thrown.getMessage should equal("OkayAsKayo.reason")
+      thrown.getMessage should equal("None.reason")
     }
     // left.forall(_ == 1) should be(true) // since no elements
     // left.forall(_ == 2) should be(true) // "
@@ -198,7 +198,7 @@ class Tests extends FunSuite with ShouldMatchers {
       d <- gt1(c)
       if d < 0
     } yield d
-    res.toString should equal("OkayAsKayo(Okay(2))")
+    res.toString should equal("None(Okay(2))")
   }
 
   test("two generators with map false 2") {
@@ -209,7 +209,7 @@ class Tests extends FunSuite with ShouldMatchers {
       if c < 0
       d <- gt1(c)
     } yield d
-    res.toString should equal("OkayAsKayo(Okay(2))")
+    res.toString should equal("None(Okay(2))")
   }
 }
 
