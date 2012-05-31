@@ -56,7 +56,7 @@ class Tests extends FunSuite with ShouldMatchers {
       b = a + 1
       if b < 0
     } yield b
-    res.toString should equal("None(Okay(2))")
+    res.toString should equal("None")
     ;{
       val thrown = intercept[NoSuchElementException] {
         res.get
@@ -198,7 +198,7 @@ class Tests extends FunSuite with ShouldMatchers {
       d <- gt1(c)
       if d < 0
     } yield d
-    res.toString should equal("None(Okay(2))")
+    res.toString should equal("None")
   }
 
   test("two generators with map false 2") {
@@ -209,7 +209,7 @@ class Tests extends FunSuite with ShouldMatchers {
       if c < 0
       d <- gt1(c)
     } yield d
-    res.toString should equal("None(Okay(2))")
+    res.toString should equal("None")
   }
 }
 
