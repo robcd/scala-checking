@@ -37,6 +37,10 @@ class Tests extends FunSuite with ShouldMatchers {
     res should equal(Okay(2))
     res.get should equal(2)
     res.getOrElse(0) should equal(2)
+    val thrown = intercept[NoSuchElementException] {
+      res.reason
+    }
+    thrown.getMessage should equal("Okay.reason")
     // left.forall(_ == 1) should be(false)
     // left.forall(_ == 2) should be(true)
     // left.exists(_ == 1) should be(false)
@@ -53,11 +57,19 @@ class Tests extends FunSuite with ShouldMatchers {
       if b < 0
     } yield b
     res should equal(OkayAsKayo(Okay(2)))
-    val thrown = intercept[NoSuchElementException] {
-      res.get
+    ;{
+      val thrown = intercept[NoSuchElementException] {
+        res.get
+      }
+      thrown.getMessage should equal("OkayAsKayo.get")
     }
-    thrown.getMessage should equal("OkayAsKayo.get")
     res.getOrElse(0) should equal(0)
+    ;{
+      val thrown = intercept[NoSuchElementException] {
+        res.reason
+      }
+      thrown.getMessage should equal("OkayAsKayo.reason")
+    }
     // left.forall(_ == 1) should be(true) // since no elements
     // left.forall(_ == 2) should be(true) // "
     // left.exists(_ == 1) should be(false) // "
@@ -153,6 +165,7 @@ class Tests extends FunSuite with ShouldMatchers {
     } yield c
     res should equal(Kayo("n must be > 1: 1"))
     res.getOrElse(0) should equal(0)
+    res.reason should equal("n must be > 1: 1")
   }
 
   test("two generators with map true") {
