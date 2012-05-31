@@ -51,6 +51,6 @@ final case class Kayo[+A, +R](r: R) extends Checked[A, R] {
   def isOkay = false
 }
 
-final case class OkayAsKayo[+A, +R](okay: Okay[A, R]) extends Checked[A, R] {
+private final case class OkayAsKayo[+A, +R](okay: Okay[A, R]) extends Checked[A, R] {
   def isOkay = false
 }

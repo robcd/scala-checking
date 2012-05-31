@@ -1,4 +1,4 @@
-package org.lafros.scala
+import org.lafros.scala.{Checked, Okay, Kayo}
 import org.scalatest.{FunSuite, matchers}
 import matchers.ShouldMatchers
 
@@ -56,7 +56,7 @@ class Tests extends FunSuite with ShouldMatchers {
       b = a + 1
       if b < 0
     } yield b
-    res should equal(OkayAsKayo(Okay(2)))
+    res.toString should equal("OkayAsKayo(Okay(2))")
     ;{
       val thrown = intercept[NoSuchElementException] {
         res.get
@@ -198,7 +198,7 @@ class Tests extends FunSuite with ShouldMatchers {
       d <- gt1(c)
       if d < 0
     } yield d
-    res should equal(OkayAsKayo(Okay(2)))
+    res.toString should equal("OkayAsKayo(Okay(2))")
   }
 
   test("two generators with map false 2") {
@@ -209,7 +209,7 @@ class Tests extends FunSuite with ShouldMatchers {
       if c < 0
       d <- gt1(c)
     } yield d
-    res should equal(OkayAsKayo(Okay(2)))
+    res.toString should equal("OkayAsKayo(Okay(2))")
   }
 }
 
