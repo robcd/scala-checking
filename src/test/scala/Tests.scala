@@ -1,4 +1,4 @@
-import org.lafros.scala.{Checked, Okay, Kayo}
+import org.lafros.scala.{Checked, Okay, Reason}
 import org.scalatest.{FunSuite, matchers}
 import matchers.ShouldMatchers
 
@@ -80,8 +80,8 @@ class Tests extends FunSuite with ShouldMatchers {
 
 
 
-  def gt0(n: Int): Checked[Int, String] = if (n > 0) Okay(n) else Kayo("n must be > 0: "+ n)
-  def gt1(n: Int): Checked[Int, String] = if (n > 1) Okay(n) else Kayo("n must be > 1: "+ n)
+  def gt0(n: Int): Checked[Int, String] = if (n > 0) Okay(n) else Reason("n must be > 0: "+ n)
+  def gt1(n: Int): Checked[Int, String] = if (n > 1) Okay(n) else Reason("n must be > 1: "+ n)
 
   test("two generators with foreach - okay 1") {
     var res = 0
@@ -163,7 +163,7 @@ class Tests extends FunSuite with ShouldMatchers {
       b <- gt0(a)
       c <- gt1(b)
     } yield c
-    res should equal(Kayo("n must be > 1: 1"))
+    res should equal(Reason("n must be > 1: 1"))
     res.getOrElse(0) should equal(0)
     res.reason should equal("n must be > 1: 1")
   }
