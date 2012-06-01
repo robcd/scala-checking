@@ -28,14 +28,12 @@ sealed abstract class Checked[+A, +R] {
     case Checked.None => Checked.None
   }
   def withFilter(p: A => Boolean): Checked[A, R] = this match {
-    case okay @ Okay(a) => if (p(a)) okay else Checked.None
-    case kayo @ Kayo(_) => kayo
-    case kayo @ Checked.None => kayo
+    case Okay(a) if !p(a) => Checked.None
+    case _ => this
   }
   def foreach[B](f: A => B): Unit = this match {
     case Okay(a) => f(a)
-    case Kayo(_) =>
-    case Checked.None =>
+    case _ =>
   }
 }
 
