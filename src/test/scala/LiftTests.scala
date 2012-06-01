@@ -39,38 +39,38 @@ class LiftTests extends FunSuite with ShouldMatchers with Checking {
     badValue.failFast(checkTrue, checkPositive) should equal(expected.fast.reason)
     badValue.failFast(checks: _*)               should equal(expected.fast.reason)
   }
-  // test("slowCheck (without mapping) bad value") {
-  //   badValue.slowCheck(checkTrue, checkPositive) should equal(expected.slow.fail)
-  //   badValue.slowCheck(checks: _*)               should equal(expected.slow.fail)
-  // }
-  // test("fastCheck (without mapping) good value") {
-  //   goodValue.fastCheck(checkTrue, checkPositive) should equal(expected.fast.succ)
-  //   goodValue.fastCheck(checks: _*)               should equal(expected.fast.succ)
-  // }
-  // test("slowCheck (without mapping) good value") {
-  //   goodValue.slowCheck(checkTrue, checkPositive) should equal(expected.slow.succ)
-  //   goodValue.slowCheck(checks: _*)               should equal(expected.slow.succ)
-  // }
-  // test("fastCheckAndMap bad value") {
-  //   def f(t: T) = t.toString
-  //   badValue.fastCheckAndMap(checkTrue, checkPositive)(f) should equal(expected.fast.fail)
-  //   badValue.fastCheckAndMap(checks: _*)(f)               should equal(expected.fast.fail)
-  // }
-  // test("slowCheckAndMap bad value") {
-  //   def f(t: T) = t.toString
-  //   badValue.slowCheckAndMap(checkTrue, checkPositive)(f) should equal(expected.slow.fail)
-  //   badValue.slowCheckAndMap(checks: _*)(f)               should equal(expected.slow.fail)
-  // }
-  // test("fastCheckAndMap good value") {
-  //   val expectedValue = Right[List[String], String](goodValue.toString)
-  //   def f(t: T) = t.toString
-  //   goodValue.fastCheckAndMap(checkTrue, checkPositive)(f) should equal(expectedValue)
-  //   goodValue.fastCheckAndMap(checks: _*)(f)               should equal(expectedValue)
-  // }
-  // test("slowCheckAndMap good value") {
-  //   val expectedValue = Right[List[String], String](goodValue.toString)
-  //   def f(t: T) = t.toString
-  //   goodValue.slowCheckAndMap(checkTrue, checkPositive)(f) should equal(expectedValue)
-  //   goodValue.slowCheckAndMap(checks: _*)(f)               should equal(expectedValue)
-  // }
+  test("failSlowly (without mapping) bad value") {
+    badValue.failSlowly(checkTrue, checkPositive) should equal(expected.slow.reason)
+    badValue.failSlowly(checks: _*)               should equal(expected.slow.reason)
+  }
+  test("failFast (without mapping) good value") {
+    goodValue.failFast(checkTrue, checkPositive) should equal(expected.fast.okay)
+    goodValue.failFast(checks: _*)               should equal(expected.fast.okay)
+  }
+  test("failSlowly (without mapping) good value") {
+    goodValue.failSlowly(checkTrue, checkPositive) should equal(expected.slow.okay)
+    goodValue.failSlowly(checks: _*)               should equal(expected.slow.okay)
+  }
+  test("failFast + map, bad value") {
+    def f(a: A) = a.toString
+    badValue.failFast(checkTrue, checkPositive).map(f) should equal(expected.fast.reason)
+    badValue.failFast(checks: _*).map(f)               should equal(expected.fast.reason)
+  }
+  test("failSlowly + map, bad value") {
+    def f(a: A) = a.toString
+    badValue.failSlowly(checkTrue, checkPositive).map(f) should equal(expected.slow.reason)
+    badValue.failSlowly(checks: _*).map(f)               should equal(expected.slow.reason)
+  }
+  test("failFast + map, good value") {
+    val expectedValue = Okay[String, String](goodValue.toString)
+    def f(a: A) = a.toString
+    goodValue.failFast(checkTrue, checkPositive).map(f) should equal(expectedValue)
+    goodValue.failFast(checks: _*).map(f)               should equal(expectedValue)
+  }
+  test("failSlowly + map, good value") {
+    val expectedValue = Okay[String, List[String]](goodValue.toString)
+    def f(a: A) = a.toString
+    goodValue.failSlowly(checkTrue, checkPositive).map(f) should equal(expectedValue)
+    goodValue.failSlowly(checks: _*).map(f)               should equal(expectedValue)
+  }
 }
