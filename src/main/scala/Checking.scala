@@ -50,4 +50,35 @@ trait Checking {
   final case class Reason[+A, +R](r: R) extends Checked[A, R] {
     def isOkay = false
   }
+
+  abstract class CheckedLift[T] {
+    def toOkay  [R]:   Okay[T, R]
+    def toReason[A]: Reason[A, T]
+    def failFast  [R](checks: (T => Checked[T, R])*): Checked[T, R]
+    def failSlowly[R](checks: (T => Checked[T, R])*): Checked[T, Iterable[R]]
+  }
+
+  implicit def any2CheckedLift[T](any: T): CheckedLift[T] = new CheckedLift[T] {
+    def toOkay  [R] = Okay[T, R](any)
+    def toReason[A] = Reason[A, T](any)
+    def failFast[R](checks: (T => Checked[T, R])*) = {
+      var opt: Option[Reason[T, R]] = None
+      checks.find { _.apply(any) match {
+          case reason @ Reason(_) => opt = Some(reason); true
+          case _ => false
+        }
+      }
+      opt.getOrElse(Okay(any))
+    }
+    def failSlowly[R](checks: (T => Checked[T, R])*) = {
+      val rs: Iterable[R] = for {
+        check <- checks
+        res = check(any)
+        if !res.isOkay
+      } yield res.reason
+      if (rs.isEmpty) Okay(any) else Reason(rs)
+    }
+  }
+
+  //type L
 }

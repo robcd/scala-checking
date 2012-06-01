@@ -1,8 +1,8 @@
-import org.lafros.scala.{Checked, Okay, Reason}
+import org.lafros.scala.Checking
 import org.scalatest.{FunSuite, matchers}
 import matchers.ShouldMatchers
 
-class Tests extends FunSuite with ShouldMatchers {
+class Tests extends FunSuite with ShouldMatchers with Checking {
   test("foreach true") {
     val checked: Checked[Int, String] = Okay(1)
     var res = 0
