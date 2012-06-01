@@ -14,8 +14,7 @@ sealed abstract class Checked[+A, +R] {
   }
   def getOrElse[B >: A](b: => B) = this match {
     case Okay(a) => a
-    case Kayo(_) => b
-    case Checked.None => b
+    case _ => b
   }
   def map[B](f: A => B): Checked[B, R] = this match {
     case Okay(a) => Okay(f(a))
