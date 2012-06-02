@@ -54,14 +54,14 @@ trait Checking {
   abstract class CheckedLift[T] {
     def toOkay  [R]:   Okay[T, R]
     def toReason[A]: Reason[A, T]
-    def failFast  [R](checks: (T => Checked[T, R])*): Checked[T, R]
-    def failSlowly[R](checks: (T => Checked[T, R])*): Checked[T, Iterable[R]]
+    def ff [R](checks: (T => Checked[T, R])*): Checked[T, R]
+    def fs [R](checks: (T => Checked[T, R])*): Checked[T, Iterable[R]]
   }
 
   implicit def any2CheckedLift[T](any: T): CheckedLift[T] = new CheckedLift[T] {
     def toOkay  [R] = Okay[T, R](any)
     def toReason[A] = Reason[A, T](any)
-    def failFast[R](checks: (T => Checked[T, R])*) = {
+    def ff[R](checks: (T => Checked[T, R])*) = {
       var opt: Option[Reason[T, R]] = None
       checks.find { _.apply(any) match {
           case reason @ Reason(_) => opt = Some(reason); true
@@ -70,7 +70,7 @@ trait Checking {
       }
       opt.getOrElse(Okay(any))
     }
-    def failSlowly[R](checks: (T => Checked[T, R])*) = {
+    def fs[R](checks: (T => Checked[T, R])*) = {
       val rs: Iterable[R] = for {
         check <- checks
         res = check(any)
@@ -102,12 +102,12 @@ trait Checking {
   }
   /**
    * lifts f, which must be curried, into an Okay, for fail-fast application. */
-  def fast[A, B](f: A => B) = Okay[A => B, R](f)
+  def ff[A, B](f: A => B) = Okay[A => B, R](f)
   /**
    * as above, but for fail-slowly application. */
-  def slow[A, B](f: A => B) = Okay[A => B, Iterable[R]](f)
+  def fs[A, B](f: A => B) = Okay[A => B, Iterable[R]](f)
 
-  implicit def checkedFun2FailFast[A, B](f: Checked[A => B, R]): FailFastAppFunct[A, B] =
+  implicit def checkedOfFun2ffap[A, B](f: Checked[A => B, R]): FailFastAppFunct[A, B] =
     new FailFastAppFunct[A, B] {
       def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]) = checked match {
         case Reason(rs)   => <*>(Reason[A, R](rs.head))
@@ -124,7 +124,7 @@ trait Checking {
         case (Checked.None,       _) => Checked.None
       }
     }
-  implicit def checkedFun2FailSlowly[A, B](f: Checked[A => B, Iterable[R]]): FailSlowlyAppFunct[A, B] =
+  implicit def checkedOfFun2fsap[A, B](f: Checked[A => B, Iterable[R]]): FailSlowlyAppFunct[A, B] =
     new FailSlowlyAppFunct[A, B] {
       def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]) =
         (f, checked) match {

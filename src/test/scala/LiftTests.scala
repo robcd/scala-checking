@@ -36,41 +36,41 @@ class LiftTests extends FunSuite with ShouldMatchers with Checking {
   }
 
   test("failFast (without mapping) bad value") {
-    badValue.failFast(checkTrue, checkPositive) should equal(expected.fast.reason)
-    badValue.failFast(checks: _*)               should equal(expected.fast.reason)
+    badValue.ff(checkTrue, checkPositive) should equal(expected.fast.reason)
+    badValue.ff(checks: _*)               should equal(expected.fast.reason)
   }
   test("failSlowly (without mapping) bad value") {
-    badValue.failSlowly(checkTrue, checkPositive) should equal(expected.slow.reason)
-    badValue.failSlowly(checks: _*)               should equal(expected.slow.reason)
+    badValue.fs(checkTrue, checkPositive) should equal(expected.slow.reason)
+    badValue.fs(checks: _*)               should equal(expected.slow.reason)
   }
   test("failFast (without mapping) good value") {
-    goodValue.failFast(checkTrue, checkPositive) should equal(expected.fast.okay)
-    goodValue.failFast(checks: _*)               should equal(expected.fast.okay)
+    goodValue.ff(checkTrue, checkPositive) should equal(expected.fast.okay)
+    goodValue.ff(checks: _*)               should equal(expected.fast.okay)
   }
   test("failSlowly (without mapping) good value") {
-    goodValue.failSlowly(checkTrue, checkPositive) should equal(expected.slow.okay)
-    goodValue.failSlowly(checks: _*)               should equal(expected.slow.okay)
+    goodValue.fs(checkTrue, checkPositive) should equal(expected.slow.okay)
+    goodValue.fs(checks: _*)               should equal(expected.slow.okay)
   }
   test("failFast + map, bad value") {
     def f(a: A) = a.toString
-    badValue.failFast(checkTrue, checkPositive).map(f) should equal(expected.fast.reason)
-    badValue.failFast(checks: _*).map(f)               should equal(expected.fast.reason)
+    badValue.ff(checkTrue, checkPositive).map(f) should equal(expected.fast.reason)
+    badValue.ff(checks: _*).map(f)               should equal(expected.fast.reason)
   }
   test("failSlowly + map, bad value") {
     def f(a: A) = a.toString
-    badValue.failSlowly(checkTrue, checkPositive).map(f) should equal(expected.slow.reason)
-    badValue.failSlowly(checks: _*).map(f)               should equal(expected.slow.reason)
+    badValue.fs(checkTrue, checkPositive).map(f) should equal(expected.slow.reason)
+    badValue.fs(checks: _*).map(f)               should equal(expected.slow.reason)
   }
   test("failFast + map, good value") {
     val expectedValue = Okay[String, String](goodValue.toString)
     def f(a: A) = a.toString
-    goodValue.failFast(checkTrue, checkPositive).map(f) should equal(expectedValue)
-    goodValue.failFast(checks: _*).map(f)               should equal(expectedValue)
+    goodValue.ff(checkTrue, checkPositive).map(f) should equal(expectedValue)
+    goodValue.ff(checks: _*).map(f)               should equal(expectedValue)
   }
   test("failSlowly + map, good value") {
     val expectedValue = Okay[String, List[String]](goodValue.toString)
     def f(a: A) = a.toString
-    goodValue.failSlowly(checkTrue, checkPositive).map(f) should equal(expectedValue)
-    goodValue.failSlowly(checks: _*).map(f)               should equal(expectedValue)
+    goodValue.fs(checkTrue, checkPositive).map(f) should equal(expectedValue)
+    goodValue.fs(checks: _*).map(f)               should equal(expectedValue)
   }
 }
