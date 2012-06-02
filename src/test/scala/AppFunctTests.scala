@@ -51,4 +51,13 @@ class AppFunctTests extends FunSuite with ShouldMatchers {
       res2 should equal(Okay(6))
     }
   }
+  test("no a1, a2 Okay") {
+    new Case {
+      def a1 = Okay(2) withFilter (_ < 0)
+      def a2 = Okay(3)
+
+      res1.toString should equal("None")
+      res2.toString should equal("None")
+    }
+  }
 }
