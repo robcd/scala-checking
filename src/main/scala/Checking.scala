@@ -80,5 +80,74 @@ trait Checking {
     }
   }
 
-  //type L
+  type R
+
+  trait FailFastAppFunct[A, B] {
+    /**
+     * handles a fail-slowly result, where Result contains an Iterable. */
+    def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]): Checked[B, R]
+    /**
+     * confers fail-fast applicative-functor status: lets you apply a FunctionN to N values in N
+     * contexts, failing as soon as the first Reason is encountered. */
+    def <*>(checked: Checked[A, R]): Checked[B, R]
+  }
+  trait FailSlowlyAppFunct[A, B] {
+    /**
+     * handles a fail-slow result, where Left contains a List. */
+    def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]): Checked[B, Iterable[R]]
+    /**
+     * confers fail-slowly applicative-functor status: lets you apply a FunctionN to N values
+     * in N contexts, continuing to accumulate further Reasons after the first is encountered. */
+    def <*>(checked: Checked[A, R]): Checked[B, Iterable[R]]
+  }
+  /**
+   * lifts f, which must be curried, into an Okay, for fail-fast application. */
+  def fast[A, B](f: A => B) = Okay[A => B, R](f)
+  /**
+   * as above, but for fail-slowly application. */
+  def slow[A, B](f: A => B) = Okay[A => B, Iterable[R]](f)
+
+  implicit def checkedFun2FailFast[A, B](f: Checked[A => B, R]): FailFastAppFunct[A, B] =
+    new FailFastAppFunct[A, B] {
+      def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]) = checked match {
+        case Reason(rs)   => <*>(Reason[A, R](rs.head))
+        case   Okay(a)    => <*>(Okay[A, R](a))
+        case Checked.None => f match {
+          case Reason(r) => Reason(r)
+          case _ => Checked.None
+        }
+      }
+      def <*>(checked: Checked[A, R]) = ((f, checked): @unchecked) match {
+        case (Reason(r),          _) => Reason(r)
+        case (Okay(_),    Reason(r)) => Reason(r)
+        case (Okay(f),      Okay(a)) => Okay(f(a))
+        case (Checked.None,       _) => Checked.None
+      }
+    }
+  implicit def checkedFun2FailSlowly[A, B](f: Checked[A => B, Iterable[R]]): FailSlowlyAppFunct[A, B] =
+    new FailSlowlyAppFunct[A, B] {
+      def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]) =
+        (f, checked) match {
+          case (Reason(rs1), Reason(rs2)) => Reason(rs1 ++ rs2)
+          case (Reason(rs),      Okay(_)) => Reason(rs)
+          case (Reason(rs), Checked.None) => Reason(rs)
+          case (Okay(_),      Reason(rs)) => Reason(rs)
+          case (Okay(f),         Okay(a)) => Okay(f(a))
+          case (Checked.None, Reason(rs)) => Reason(rs)
+          case (Checked.None,    Okay(_)) => Checked.None
+          case (_,          Checked.None) => Checked.None
+        }
+      def <*>(checked: Checked[A, R]) = ((f, checked): @unchecked) match {
+        case (Reason(rs),   Reason(r)) => Reason(rs ++ Iterable(r))
+        case (Reason(rs),     Okay(_)) => Reason(rs)
+        case (Okay(_),      Reason(r)) => Reason(Iterable(r))
+        case (Okay(f),        Okay(a)) => Okay(f(a))
+        case (Checked.None, Reason(r)) => Reason(Iterable(r))
+        case (Checked.None,   Okay(_)) => Checked.None
+      }
+    }
+}
+
+object Checking extends Checking {
+  type L = String
 }
