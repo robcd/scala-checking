@@ -31,7 +31,7 @@ class AppFunctTestsWithChecks extends FunSuite with ShouldMatchers {
 
     type A = (Int, String)
     type R = String
-    def f(a1: A)(a2: A) = (a1._1 + a2._1, a2._2 +" & "+ a2._2 +" items")
+    def f(a1: A)(a2: A) = (a1._1 + a2._1, a1._2 +" & "+ a2._2 +" items")
     def check1(a: A) = if (a._1 > 0) Okay(a) else Reason(mustBe)
     def check2(a: A) = a._2 match {
       case null => Reason(nameNull)
@@ -49,6 +49,41 @@ class AppFunctTestsWithChecks extends FunSuite with ShouldMatchers {
       res2 should equal(Reason(Iterable(mustBe, mustBe)))
       res3 should equal(Reason(Iterable(mustBe, nameEmpty, mustBe, nameNull)))
       res4 should equal(Reason(Iterable(mustBe, mustBe, nameNull)))
+    }
+  }
+
+  test("(2, null) (0, tenor)") {
+    new Case {
+      def a1 = (2, null)
+      def a2 = (0, "tenor")
+
+      res1 should equal(Reason(nameNull))
+      res2 should equal(Reason(Iterable(nameNull, mustBe)))
+      res3 should equal(Reason(Iterable(nameNull, mustBe)))
+      res4 should equal(Reason(Iterable(nameNull, mustBe)))
+    }
+  }
+
+  test("(2, alto) (3, empty)") {
+    new Case {
+      def a1 = (2, "alto")
+      def a2 = (3, "")
+
+      res1 should equal(Reason(nameEmpty))
+      res2 should equal(Reason(Iterable(nameEmpty)))
+      res3 should equal(Reason(Iterable(nameEmpty)))
+      res4 should equal(Reason(Iterable(nameEmpty)))
+    }
+  }
+  test("(2, alto) (3, tenor)") {
+    new Case {
+      def a1 = (2, "alto")
+      def a2 = (3, "tenor")
+
+      res1 should equal(Okay((5, "alto & tenor items")))
+      res2 should equal(Okay((5, "alto & tenor items")))
+      res3 should equal(Okay((5, "alto & tenor items")))
+      res4 should equal(Okay((5, "alto & tenor items")))
     }
   }
 }
