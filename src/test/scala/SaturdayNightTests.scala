@@ -72,27 +72,30 @@ object ClubbedToDeath extends Nightclub {
   }
 }
 
-trait Test {
-  def run(block: => Any) {
-    println(block)
-  }
-}
+import org.scalatest.{FunSuite, matchers}
+import matchers.ShouldMatchers
 
 // Now let's see these in action
-object Test1 extends App with Test {
+class ClubbedToDeathTest extends FunSuite with ShouldMatchers {
   import people._
-  // Let's go clubbing!
-  run(ClubbedToDeath costToEnter Dave) //res0: scalaz.Validation[String,Double] = Failure(Too Old!)
 
-  run(ClubbedToDeath costToEnter Ken) //res1: scalaz.Validation[String,Double] = Success(5.0)
+  test("costToEnter") {
+    ClubbedToDeath.costToEnter(Dave) should equal(Reason("Too Old!"))
+    //scalaz.Validation[String,Double] = Failure(Too Old!)
 
-  run(ClubbedToDeath costToEnter Ruby) //res2: scalaz.Validation[String,Double] = Success(0.0)
+    ClubbedToDeath.costToEnter(Ken) should equal(Okay(5.0))
+    //scalaz.Validation[String,Double] = Success(5.0)
 
-  run(ClubbedToDeath costToEnter (Ruby.copy(age = 17)))
-  //res3: scalaz.Validation[String,Double] = Failure(Too Young!)
+    ClubbedToDeath.costToEnter(Ruby) should equal(Okay(0.0))
+    // scalaz.Validation[String,Double] = Success(0.0)
 
-  run(ClubbedToDeath costToEnter (Ken.copy(sobriety = Sobriety.Unconscious)))
-  //res5: scalaz.Validation[String,Double] = Failure(Sober Up!)
+    ClubbedToDeath.costToEnter(Ruby.copy(age = 17)) should equal(Reason("Too Young!"))
+    // scalaz.Validation[String,Double] = Failure(Too Young!)
+
+    ClubbedToDeath.costToEnter(Ken.copy(sobriety = Sobriety.Unconscious)) should
+      equal(Reason("Sober Up!"))
+    // scalaz.Validation[String,Double] = Failure(Sober Up!)
+  }
 }
 /**
  * The thing to note here is how the Validations can be composed together in a
@@ -125,14 +128,17 @@ object ClubTropicana extends Nightclub {
  * And the use? Dave tried the second nightclub after a few more drinks in the pub
  *
  */
-object Test2 extends App with Test {
+class ClubTropicanaTest extends FunSuite with ShouldMatchers {
   import people._
 
-  run(ClubTropicana costToEnter (Dave.copy(sobriety = Sobriety.Paralytic)))
-  //res6: scalaz.Scalaz.ValidationNEL[String,Double] = Failure(NonEmptyList(Too Old!, Sober Up!))
+  test("costToEnter ClubTropicana") {
+    ClubTropicana.costToEnter(Dave.copy(sobriety = Sobriety.Paralytic)) should
+    equal(Reason(Iterable("Too Old!", "Sober Up!")))
+    // scalaz.Scalaz.ValidationNEL[String,Double] = Failure(NonEmptyList(Too Old!, Sober Up!))
 
-  run(ClubTropicana costToEnter(Ruby))
-  //res7: scalaz.Scalaz.ValidationNEL[String,Double] = Success(0.0)
+    ClubTropicana.costToEnter(Ruby) should equal(Okay(0.0))
+    // scalaz.Scalaz.ValidationNEL[String,Double] = Success(0.0)
+  }
 }
 /**
  * So, what have we done? Well, with a *tiny change* (and no changes to the individual checks
@@ -160,11 +166,14 @@ object GayBar extends Nightclub {
   }
 }
 
-object Test3 extends App with Test {
+class GayBarTest extends FunSuite with ShouldMatchers {
   import GayBar._
 
-  run(costToEnter(Person(Gender.Male, 59, Set("Jeans"), Sobriety.Paralytic)))
-  //Failure(NonEmptyList(Too Old!, Smarten Up!, Sober Up!))
+  test("costToEnter GayBar") {
+    costToEnter(Person(Gender.Male, 59, Set("Jeans"), Sobriety.Paralytic)) should
+    equal(Reason(Iterable("Too Old!", "Smarten Up!", "Sober Up!")))
+    // Failure(NonEmptyList(Too Old!, Smarten Up!, Sober Up!))
+  }
 }
 
 /**
