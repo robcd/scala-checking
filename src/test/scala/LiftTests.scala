@@ -3,6 +3,9 @@ import org.scalatest.{FunSuite, matchers}
 import matchers.ShouldMatchers
 
 class LiftTests extends FunSuite with ShouldMatchers with Checking {
+  // n.b. Checking's abstract type, R need not be supplied for a concrete class to compiled and
+  // even instantiated, provided we don't refer to it - this we only do when using <*>
+
   test("toOkay") {
     val n = 1
     n.toOkay         should equal(Okay[Int,    Any](n))

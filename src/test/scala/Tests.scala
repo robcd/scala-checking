@@ -3,6 +3,9 @@ import org.scalatest.{FunSuite, matchers}
 import matchers.ShouldMatchers
 
 class Tests extends FunSuite with ShouldMatchers with Checking {
+  // n.b. Checking's abstract type, R need not be supplied for a concrete class to compiled and
+  // even instantiated, provided we don't refer to it - this we only do when using <*>
+
   test("foreach true") {
     val checked: Checked[Int, String] = Okay(1)
     var res = 0
