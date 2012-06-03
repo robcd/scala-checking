@@ -6,13 +6,15 @@ class AppFunctTests extends FunSuite with ShouldMatchers {
   abstract class Spec {
     this: Checking =>
     type A
-    type C[A] = Checked[A, R]
+    type C = Checked[A, R]
     def f(a1: A)(a2: A): A
-    def a1: C[A]
-    def a2: C[A]
+    def a1: C
+    def a2: C
 
-    val res1 = ff(f) <*> a1 <*> a2
-    val res2 = fs(f) <*> a1 <*> a2
+    def res1 = ff(f) <*> a1 <*> a2
+    def res2 = fs(f) <*> a1 <*> a2
+    // NB defs instead of vals since depend on abstract members (which might get impl'ted in
+    // terms of vals, which would otherwise get initialised too late)
   }
 
   abstract class Case extends Spec with Checking {
