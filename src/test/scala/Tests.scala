@@ -6,37 +6,35 @@ class Tests extends FunSuite with ShouldMatchers with Checking {
   // n.b. Checking's abstract type, R need not be supplied for a concrete class to compiled and
   // even instantiated, provided we don't refer to it - this we only do when using <*>
 
-  test("foreach true") {
+  test("foreach - okay") {
     val checked: Checked[Int, String] = Okay(1)
     var res = 0
     for {
       a <- checked
       b = a + 1
-      if b > 0
     } res = b
 
     res should equal(2)
   }
 
-  test("foreach false") {
-    val checked: Checked[Int, String] = Okay(1)
+  test("foreach - reason") {
+    val checked: Checked[Int, String] = Reason("er")
     var res = 0
     for {
       a <- checked
       b = a + 1
-      if b < 0
     } res = b
 
     res should equal(0)
   }
 
-  test("map true") {
+  test("map - okay") {
     val checked: Checked[Int, String] = Okay(1)
     val res = for {
       a <- checked
       b = a + 1
-      if b > 0
     } yield b
+
     res should equal(Okay(2))
     res.get should equal(2)
     res.getOrElse(0) should equal(2)
@@ -52,51 +50,43 @@ class Tests extends FunSuite with ShouldMatchers with Checking {
     // left.toOption should equal(Some(2))
   }
 
-  test("map false") {
-    val checked: Checked[Int, String] = Okay(1)
+  test("map - reason") {
+    val checked: Checked[Int, String] = Reason("er")
     val res = for {
       a <- checked
       b = a + 1
-      if b < 0
     } yield b
-    res.toString should equal("None")
-    ;{
-      val thrown = intercept[NoSuchElementException] {
-        res.get
-      }
-      thrown.getMessage should equal("None.get")
-    }
+
+    res should equal(Reason("er"))
+    res.reason should equal("er")
     res.getOrElse(0) should equal(0)
-    ;{
-      val thrown = intercept[NoSuchElementException] {
-        res.reason
-      }
-      thrown.getMessage should equal("None.reason")
+    val thrown = intercept[NoSuchElementException] {
+      res.get
     }
-    // left.forall(_ == 1) should be(true) // since no elements
-    // left.forall(_ == 2) should be(true) // "
-    // left.exists(_ == 1) should be(false) // "
-    // left.exists(_ == 2) should be(false) // "
-    // left.toSeq should equal(Seq())
-    // left.toOption should equal(None)
+    thrown.getMessage should equal("Reason.get")
+    // left.forall(_ == 1) should be(false)
+    // left.forall(_ == 2) should be(true)
+    // left.exists(_ == 1) should be(false)
+    // left.exists(_ == 2) should be(true)
+    // left.toSeq should equal(Seq(2))
+    // left.toOption should equal(Some(2))
   }
-
-
 
   def gt0(n: Int): Checked[Int, String] = if (n > 0) Okay(n) else Reason("n must be > 0: "+ n)
   def gt1(n: Int): Checked[Int, String] = if (n > 1) Okay(n) else Reason("n must be > 1: "+ n)
 
-  test("two generators with foreach - okay 1") {
+  test("foreach, two generators - okay 1") {
     var res = 0
     val a = 2
     for {
       b <- gt0(a)
       c <- gt1(b)
     } res = c
+
     res should equal(2)
   }
 
-  test("two generators with foreach - okay 2") {
+  test("foreach, two generators - okay 2") {
     var res = 0
     val a = 1
     for {
@@ -104,115 +94,119 @@ class Tests extends FunSuite with ShouldMatchers with Checking {
       c = b + 1
       d <- gt1(c)
     } res = d
+
     res should equal(2)
   }
 
-  test("two generators with foreach - kayo") {
+  test("foreach two generators - okay 3") {
+    var res = 0
+    val a = 2
+    for {
+      b <- gt0(a)
+      c <- gt1(b)
+      d = c + 1
+    } res = d
+
+    res should equal(3)
+  }
+
+  test("foreach, two generators - reason 1") {
     var res = 0
     val a = 1
     for {
       b <- gt0(a)
       c <- gt1(b)
     } res = c
+
     res should equal(0)
   }
 
-  test("two generators with foreach true") {
+  test("foreach, two generators - reason 2") {
     var res = 0
     val a = 1
     for {
       b <- gt0(a)
-      c = b + 1
+      c = b - 1
       d <- gt1(c)
-      if d > 0
     } res = d
-    res should equal(2)
+
+    res should equal(0)
   }
 
-  test("two generators with foreach false") {
+  test("foreach, two generators - reason 3") {
     var res = 0
     val a = 1
     for {
       b <- gt0(a)
-      c = b + 1
-      d <- gt1(c)
-      if d < 0
+      c <- gt1(b)
+      d = c + 1
     } res = d
+
     res should equal(0)
   }
 
-  test("two generators with map - okay 1") {
+  test("map, two generators - okay 1") {
     val a = 2
     val res = for {
       b <- gt0(a)
       c <- gt1(b)
     } yield c
+
     res should equal(Okay(a))
   }
 
-  test("two generators with map - okay 2") {
+  test("map, two generators - okay 2") {
     val a = 1
     val res = for {
       b <- gt0(a)
       c = b + 1
       d <- gt1(c)
     } yield d
+
     res should equal(Okay(2))
   }
 
-  test("two generators with map - fails") {
+  test("map, two generators - okay 3") {
+    val a = 2
+    val res = for {
+      b <- gt0(a)
+      c <- gt1(b)
+      d = c + 1
+    } yield d
+
+    res should equal(Okay(3))
+  }
+
+  test("map, two generators - reason 1") {
     val a = 1
     val res = for {
       b <- gt0(a)
       c <- gt1(b)
     } yield c
+
     res should equal(Reason("n must be > 1: 1"))
-    res.getOrElse(0) should equal(0)
-    res.reason should equal("n must be > 1: 1")
   }
 
-  test("two generators with map true") {
+  test("map, two generators - reason 2") {
     val a = 1
     val res = for {
       b <- gt0(a)
-      c = b + 1
+      c = b - 1
       d <- gt1(c)
-      if d > 0
     } yield d
-    res should equal(Okay(2))
+
+    res should equal(Reason("n must be > 1: 0"))
   }
 
-  test("two generators with map true 2") {
+  test("map, two generators - reason 3") {
     val a = 1
     val res = for {
       b <- gt0(a)
-      c = b + 1
-      if c > 0
-      d <- gt1(c)
+      c <- gt1(b)
+      d = c + 1
     } yield d
-    res should equal(Okay(2))
-  }
 
-  test("two generators with map false") {
-    val a = 1
-    val res = for {
-      b <- gt0(a)
-      c = b + 1
-      d <- gt1(c)
-      if d < 0
-    } yield d
-    res.toString should equal("None")
-  }
-
-  test("two generators with map false 2") {
-    val a = 1
-    val res = for {
-      b <- gt0(a)
-      c = b + 1
-      if c < 0
-      d <- gt1(c)
-    } yield d
-    res.toString should equal("None")
+    res should equal(Reason("n must be > 1: 1"))
   }
 }
 

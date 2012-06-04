@@ -6,40 +6,26 @@ trait Checking {
     def get: A = this match {
       case Okay(a) => a
       case Reason(_) => throw new NoSuchElementException("Reason.get")
-      case Checked.None => throw new NoSuchElementException("None.get")
     }
     def reason: R = this match {
       case Okay(_) => throw new NoSuchElementException("Okay.reason")
       case Reason(r) => r
-      case Checked.None => throw new NoSuchElementException("None.reason")
     }
     def getOrElse[B >: A](b: => B) = this match {
       case Okay(a) => a
-      case _ => b
+      case Reason(_) => b
     }
     def map[B](f: A => B): Checked[B, R] = this match {
       case Okay(a) => Okay(f(a))
       case Reason(r) => Reason(r)
-      case Checked.None => Checked.None
     }
     def flatMap[B, S >: R](f: A => Checked[B, S]): Checked[B, S] = this match {
       case Okay(a) => f(a)
       case Reason(s) => Reason(s)
-      case Checked.None => Checked.None
-    }
-    def withFilter(p: A => Boolean): Checked[A, R] = this match {
-      case Okay(a) if !p(a) => Checked.None
-      case _ => this
     }
     def foreach[B](f: A => B): Unit = this match {
       case Okay(a) => f(a)
-      case _ =>
-    }
-  }
-
-  private object Checked {
-    case object None extends Checked[Nothing, Nothing] {
-      def isOkay = false
+      case Reason(_) =>
     }
   }
 
@@ -109,39 +95,30 @@ trait Checking {
 
   implicit def checkedOfFun2ffap[A, B](f: Checked[A => B, R]): FailFastAppFunct[A, B] =
     new FailFastAppFunct[A, B] {
-      def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]) =
-        (checked: @unchecked /* never Checked.None */) match {
-          case   Okay(a)    => <*>(Okay[A, R](a))
-          case Reason(rs)   => <*>(Reason[A, R](rs.head))
-        }
+      def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]) = checked match {
+        case   Okay(a)    => <*>(Okay[A, R](a))
+        case Reason(rs)   => <*>(Reason[A, R](rs.head))
+      }
       def <*>(checked: Checked[A, R]) = (f, checked) match {
         case (  Okay(f),      Okay(a)) => Okay(f(a))
         case (  Okay(_),    Reason(r)) => Reason(r)
-        case (  Okay(_), Checked.None) => Checked.None
         case (Reason(r),            _) => Reason(r)
-        case (Checked.None,         _) => Checked.None
       }
     }
   implicit def checkedOfFun2fsap[A, B](f: Checked[A => B, Iterable[R]]): FailSlowlyAppFunct[A, B] =
     new FailSlowlyAppFunct[A, B] {
       def <*>[Rs](checked: Checked[A, Rs])(implicit ev: Rs <:< Iterable[R]) =
-        ((f, checked): @unchecked /* checked is never Checked.None */) match {
+        (f, checked) match {
           case (Okay(f),         Okay(a)) => Okay(f(a))
           case (Okay(_),      Reason(rs)) => Reason(rs)
           case (Reason(rs),      Okay(_)) => Reason(rs)
           case (Reason(rs1), Reason(rs2)) => Reason(rs1 ++ rs2)
-          case (Checked.None,    Okay(_)) => Checked.None
-          case (Checked.None, Reason(rs)) => Reason(rs)
         }
       def <*>(checked: Checked[A, R]) = (f, checked) match {
         case (Okay(f),         Okay(a)) => Okay(f(a))
         case (Okay(_),       Reason(r)) => Reason(Iterable(r))
-        case (Okay(_),    Checked.None) => Checked.None
         case (Reason(rs),      Okay(_)) => Reason(rs)
         case (Reason(rs),    Reason(r)) => Reason(rs ++ Iterable(r))
-        case (Reason(rs), Checked.None) => Reason(rs)
-        case (Checked.None,  Reason(r)) => Reason(Iterable(r))
-        case (Checked.None,          _) => Checked.None
       }
     }
 }
