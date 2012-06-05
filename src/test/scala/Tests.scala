@@ -47,7 +47,7 @@ class Tests extends FunSuite with ShouldMatchers with Checking {
     // left.exists(_ == 1) should be(false)
     // left.exists(_ == 2) should be(true)
     // left.toSeq should equal(Seq(2))
-    // left.toOption should equal(Some(2))
+    res.toOption should equal(Some(2))
   }
 
   test("map - reason") {
@@ -69,7 +69,7 @@ class Tests extends FunSuite with ShouldMatchers with Checking {
     // left.exists(_ == 1) should be(false)
     // left.exists(_ == 2) should be(true)
     // left.toSeq should equal(Seq(2))
-    // left.toOption should equal(Some(2))
+    res.toOption should equal(None)
   }
 
   def gt0(n: Int): Checked[Int, String] = if (n > 0) Okay(n) else Reason("n must be > 0: "+ n)

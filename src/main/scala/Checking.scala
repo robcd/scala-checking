@@ -27,6 +27,7 @@ trait Checking {
       case Okay(a) => f(a)
       case Reason(_) =>
     }
+    def toOption: Option[A] = if (isOkay) Some(get) else None
   }
 
   final case class Okay[+A, +R](a: A) extends Checked[A, R] {
