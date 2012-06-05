@@ -62,49 +62,4 @@ class AppFunctTests extends FunSuite with ShouldMatchers {
       res2 should equal(Reason(Iterable(a1Msg, a2Msg)))
     }
   }
-  test("a1 Okay, a2 filtered-out") {
-    new Case {
-      def a1 = Okay(2)
-      def a2 = Okay(3) withFilter (_ < 0)
-
-      res1.toString should equal("None")
-      res2.toString should equal("None")
-    }
-  }
-  test("a1 unobtainable, a2 filtered-out") {
-    new Case {
-      def a1 = Reason(a1Msg)
-      def a2 = Okay(3) withFilter (_ < 0)
-
-      res1 should equal(Reason(a1Msg))
-      res2 should equal(Reason(Iterable(a1Msg)))
-    }
-  }
-  test("a1 filtered-out, a2 Okay") {
-    new Case {
-      def a1 = Okay(2) withFilter (_ < 0)
-      def a2 = Okay(3)
-
-      res1.toString should equal("None")
-      res2.toString should equal("None")
-    }
-  }
-  test("a1 filtered-out, a2 unobtainable") {
-    new Case {
-      def a1 = Okay(2) withFilter (_ < 0)
-      def a2 = Reason(a2Msg)
-
-      res1.toString should equal("None")
-      res2          should equal(Reason(Iterable(a2Msg)))
-    }
-  }
-  test("a1, a2 both filtered out") {
-    new Case {
-      def a1 = Okay(2) withFilter (_ < 0)
-      def a2 = Okay(3) withFilter (_ < 0)
-
-      res1.toString should equal("None")
-      res2.toString should equal("None")
-    }
-  }
 }
