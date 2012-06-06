@@ -1,7 +1,9 @@
 [`Checking`](scala-checking/blob/master/src/main/scala/Checking.scala)
-is a trait (very like `EitherExtras`), that provides (yet) a(nother)
-biased alternative to `scala.Either`, a 'fixed' version of which is to
-be found [here](/robcd/scala-either-proj-map-returns-proj/blob/master/src/main/scala/Either.scala).
+is a trait (very like
+[`EitherExtras`](/robcd/scala-either-extras/blob/master/src/main/scala/EitherExtras.scala)),
+that provides (yet) a(nother) biased alternative to `scala.Either`, a
+'fixed' version of which is to be found
+[here](/robcd/scala-either-proj-map-returns-proj/blob/master/src/main/scala/Either.scala).
 
 This alternative is called `Checked`, whose only subclasses are `Okay`
 and `Reason`.
