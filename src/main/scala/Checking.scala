@@ -19,13 +19,13 @@ package org.lafros.scala
  */
 trait Checking {
   /**
-   * Yet another 'Right-biased Either' candidate.
+   * Yet another 'biased Either' candidate.
    *
    * For use as the return type, in place of A, wherever an exception might otherwise be thrown
    * and a more 'functional' style is preferred.
    *
    * The value of A to be returned is returned wrapped in an instance of one of only two
-   * concrete subclasses of Checked, depending on whether or not an exception arose.
+   * concrete subclasses of Checked, depending on whether or not an exceptional condition arose.
    *
    * If there was no exception, this will be the Okay subclass, otherwise, the Reason one.
    */
