@@ -24,6 +24,14 @@ provided for `Checked` by `Checking`, including the ability to check
 multiple values at once using the `<*>` operator. Note that 'fast' and
 'slow' have now become 'ff' (fail-fast) and 'fs' (fail-slowly), respectively.
 
+For example code, please see the test classes:  
+[`for` comprehension tests](scala-checking/blob/master/src/test/scala/Tests.scala)  
+['lift' tests](scala-checking/blob/master/src/test/scala/LiftTests.scala)  
+[`<*>` tests](scala-checking/blob/master/src/test/scala/AppFunctTests.scala)  
+[`<*>` tests with multiple checks](scala-checking/blob/master/src/test/scala/AppFunctTestsWithChecks.scala)  
+[case-class tests](scala-checking/blob/master/src/test/scala/CaseClassTests.scala)  
+['SaturdayNight' tests](scala-checking/blob/master/src/test/scala/SaturdayNightTests.scala)
+
 Artifacts
 ---------
 
