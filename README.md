@@ -10,9 +10,10 @@ and `Reason`.
 
 It is for use as the return type, in place of some type, `A`, wherever
 an exception might otherwise be thrown and a more 'functional' style
-is preferred. The value of `A` to be returned is returned wrapped in an
-instance of either `Okay` or `Reason`, depending on whether or not an
-exceptional condition arose.
+is preferred. Thus, a `Checked[A, R]` will contain either an `A`
+wrapped in an instance of `Okay` or else an `R` wrapped in an instance
+of `Reason`, depending on whether or not an exceptional condition
+arose.
 
 Note that although `Checked` provides `map` and `flatMap`, it does not
 provide `filter` or `withFilter`, since it was concluded that an empty
