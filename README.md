@@ -22,3 +22,10 @@ The same 'extras' provided for `scala.Either` by `EitherExtras` are also
 provided for `Checked` by `Checking`, including the ability to check
 multiple values at once using the `<*>` operator. Note that 'fast' and
 'slow' have now become 'ff' (fail-fast) and 'fs' (fail-slowly), respectively.
+
+Artifacts
+---------
+
+org.lafros artifacts in [Maven central repository](http://search.maven.org/#browse%7C238533119)  
+
+org.lafros artifacts in [Sonatype mirror](http://oss.sonatype.org/content/groups/public/org/lafros)
