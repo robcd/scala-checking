@@ -23,16 +23,13 @@ class TestsInvolvingOption extends FunSuite with ShouldMatchers with Checking {
 
   type Ch = Checked[Seq[String], Exception]
 
-  // def read(b: Boolean): Ch =
-  //   if (b) Okay(Seq("1st", "2nd")) else Reason(new Exception("empty Seq"))
-
   test("foreach, Seq non-empty, head non-empty") {
     def read: Ch = Okay(Seq("1st", "2nd"))
     var res = ""
     for {
       ss <- read
       h <- ss.headOption
-      if h != ""
+      if h != "" // can still use 'if' here, evidently!
     } res = h
 
     res should equal("1st")
@@ -60,6 +57,56 @@ class TestsInvolvingOption extends FunSuite with ShouldMatchers with Checking {
     } res = h
 
     res should equal("")
+  }
+
+  // test("map, Seq non-empty, head non-empty") {
+  //   def read: Ch = Okay(Seq("1st", "2nd"))
+  //   val res = for {
+  //     ss <- read
+  //     h <- ss.headOption
+  //   //  ^
+  //   // type mismatch;
+  //   //  found   : Option[String]
+  //   //  required: TestsInvolvingOption.this.Checked[?,?]
+  //     if h != ""
+  //   } yield h
+
+  //   res should equal("1st")
+  // }
+
+
+
+  test("map, Seq non-empty, head non-empty") {
+    def read: Ch = Okay(Seq("1st", "2nd"))
+    val res = for {
+      ss <- read.toOption
+      h <- ss.headOption
+      if h != ""
+    } yield h
+
+    res should equal(Some("1st"))
+  }
+
+  test("map, Seq non-empty, head empty") {
+    def read: Ch = Okay(Seq("", "2nd"))
+    val res = for {
+      ss <- read.toOption
+      h <- ss.headOption
+      if h != ""
+    } yield h
+
+    res should equal(None)
+  }
+
+  test("map, Seq empty") {
+    def read: Ch = Okay(Seq())
+    val res = for {
+      ss <- read.toOption
+      h <- ss.headOption
+      if h != ""
+    } yield h
+
+    res should equal(None)
   }
 }
 
