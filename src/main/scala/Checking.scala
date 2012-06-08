@@ -24,10 +24,9 @@ trait Checking {
    * For use as the return type, in place of A, wherever an exception might otherwise be thrown
    * and a more 'functional' style is preferred.
    *
-   * The value of A to be returned is returned wrapped in an instance of one of only two
-   * concrete subclasses of Checked, depending on whether or not an exceptional condition arose.
-   *
-   * If there was no exception, this will be the Okay subclass, otherwise, the Reason one.
+   * Thus, a Checked[A, R] will contain either an A wrapped in an instance of Okay or else an R
+   * wrapped in an instance of Reason, depending on whether or not an exceptional condition
+   * arose.
    */
   sealed abstract class Checked[+A, +R] {
     def isOkay: Boolean
