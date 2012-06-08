@@ -28,12 +28,26 @@ class TestsInvolvingOption extends FunSuite with ShouldMatchers with Checking {
     var res = ""
     for {
       ss <- read
-      h <- ss.headOption
-      if h != "" // can still use 'if' here, evidently!
+      h <- ss.headOption // okay that this is now an Option, provided we don't use yield;
+      if h != "" // can still use 'if' following an Option (which has a filter/withFilter)
     } res = h
 
     res should equal("1st")
   }
+
+  // test("foreach, Seq non-empty, head non-empty 2") {
+  //   def read: Ch = Okay(Seq("1st", "2nd"))
+  //   var res = ""
+  //   for {
+  //     ss <- read
+  //     //    ^
+  //     // value withFilter is not a member of TestsInvolvingOption.this.Ch
+  //     if !ss.empty
+  //     h = ss.head
+  //   } res = h
+
+  //   res should equal("1st")
+  // }
 
   test("foreach, Seq non-empty, head empty") {
     def read: Ch = Okay(Seq("", "2nd"))
