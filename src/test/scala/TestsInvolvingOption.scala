@@ -108,5 +108,28 @@ class TestsInvolvingOption extends FunSuite with ShouldMatchers with Checking {
 
     res should equal(None)
   }
+
+  test("foreach, Reason") {
+    def read: Ch = Reason(new Exception("er"))
+    var res = ""
+    for {
+      ss <- read
+      h <- ss.headOption
+      if h != ""
+    } res = h
+
+    res should equal("")
+  }
+
+  test("map, Reason") {
+    def read: Ch = Reason(new Exception("er"))
+    val res = for {
+      ss <- read.toOption
+      h <- ss.headOption
+      if h != ""
+    } yield h
+
+    res should equal(None)
+  }
 }
 
