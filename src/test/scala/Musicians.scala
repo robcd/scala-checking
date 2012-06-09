@@ -42,7 +42,7 @@ trait Musicians extends Checking {
           case ex: NoSuchElementException =>
             throw new NoSuchElementException("unrecognised instrument: "+ s)
         }
-        if (instruments exists(_ == panPipes)) Reason("includes "+ panPipes)
+        if (instruments exists(_ == panPipes)) Reason("plays the "+ panPipes)
         else Okay(instruments)
       }
       catch {
