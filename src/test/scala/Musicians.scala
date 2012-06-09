@@ -26,11 +26,11 @@ trait Musicians extends Checking {
 
   object Musician {
     object checks {
-      def name(s: String) = if (s.length > 0) Okay(s) else Reason("empty name")
+      def name(s: String) = if (s.length > 0) s toOkay else "empty name" toReason
       def genre(s: String) = try {
         Genre.withName(s) match {
-          case `easyListening` => Reason(s)
-          case other => Okay(other)
+          case `easyListening` => s toReason
+          case other => other toOkay
         }
       } catch {
         case ex: NoSuchElementException => Reason("unrecognised genre: "+ s)
@@ -43,10 +43,10 @@ trait Musicians extends Checking {
             throw new NoSuchElementException("unrecognised instrument: "+ s)
         }
         if (instruments exists(_ == panPipes)) Reason("plays the "+ panPipes)
-        else Okay(instruments)
+        else instruments toOkay
       }
       catch {
-        case ex: NoSuchElementException => Reason(ex.getMessage)
+        case ex: NoSuchElementException => ex.getMessage toReason
       }
     }
   }
