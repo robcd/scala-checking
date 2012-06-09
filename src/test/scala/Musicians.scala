@@ -8,7 +8,8 @@ trait Musicians extends Checking {
 
   object Genre extends Enumeration {
     type Genre = Value
-    val easyListening, jazz, pop = Value
+    val easyListening = Value("easy listening")
+    val jazz, pop = Value
   }
   import Genre._
 
@@ -27,7 +28,7 @@ trait Musicians extends Checking {
     object checks {
       def name(s: String) = if (s.length > 0) Okay(s) else Reason("empty name")
       def genre(s: String) = try {
-        Genre.withName(s) match {
+        Genre.withName(s.trim) match {
           case `easyListening` => Reason(s)
           case other => Okay(other)
         }
@@ -35,7 +36,7 @@ trait Musicians extends Checking {
         case ex: NoSuchElementException => Reason("unrecognised genre: "+ s)
       }
       def instruments(ss: Iterable[String]) = try {
-        val instruments = for (s <- ss) yield Instrument.withName(s)
+        val instruments = for (s <- ss) yield Instrument.withName(s.trim)
         if (instruments exists(_ == panPipes)) Reason("includes "+ panPipes)
         else Okay(instruments)
       }
