@@ -147,33 +147,43 @@ class TestsInvolvingOption extends FunSuite with ShouldMatchers with Checking {
   }
 
   type Ch2 = Checked[Option[String], Exception]
-  def read2(ch: Ch): Ch2 = ch match {
-      case Okay(ss) =>
-        val res = for {
-          h <- ss.headOption
-          if h != ""
-        } yield h
+
+  // to convert a Checked[A, R] into a Checked[B, R], write an A => Checked[B, R]
+  def read2(ss: Seq[String]): Ch2 = {
+    val res = for {
+      h <- ss.headOption
+      if h != ""
+    } yield h
     Okay(res)
-    case Reason(r) => Reason(r)
   }
+  // this may then be passed to Checked's flatMap, and therefore used in for-comprehensions
 
   test("map, Seq non-empty, head non-empty 2") {
     def read: Ch = Okay(Seq("1st", "2nd"))
-    val res = read2(read)
+    val  res: Ch2 = for {
+      ss <- read      // Checked[Seq[String],    R]
+      h <- read2(ss)  // Checked[Option[String], R]
+    } yield h
 
     res should equal(Okay(Some("1st")))
   }
 
   test("map, Seq non-empty, head empty 2") {
     def read: Ch = Okay(Seq("", "2nd"))
-    val res = read2(read)
+    val res = for {
+      ss <- read
+      h <- read2(ss)
+    } yield h
 
     res should equal(Okay(None))
   }
 
   test("map, Seq empty 2") {
     def read: Ch = Okay(Seq())
-    val res = read2(read)
+    val res = for {
+      ss <- read
+      h <- read2(ss)
+    } yield h
 
     res should equal(Okay(None))
   }
@@ -181,58 +191,13 @@ class TestsInvolvingOption extends FunSuite with ShouldMatchers with Checking {
   test("map, Reason 2") {
     val ex = new Exception("er")
     def read: Ch = Reason(ex)
-    val res = read2(read)
-
-    res should equal(Reason(ex))
-  }
-
-  def read3(ss: Seq[String]): Ch2 = {
-    val res = for {
-      h <- ss.headOption
-      if h != ""
-    } yield h
-    Okay(res)
-  }
-
-  test("map, Seq non-empty, head non-empty 3") {
-    def read: Ch = Okay(Seq("1st", "2nd"))
-    val res = for {
-      ss <- read      // Checked[Seq[String],    R]
-      h <- read3(ss)  // Checked[Option[String], R]
-    } yield h
-
-    res should equal(Okay(Some("1st")))
-  }
-
-  test("map, Seq non-empty, head empty 3") {
-    def read: Ch = Okay(Seq("", "2nd"))
     val res = for {
       ss <- read
-      h <- read3(ss)
-    } yield h
-
-    res should equal(Okay(None))
-  }
-
-  test("map, Seq empty 3") {
-    def read: Ch = Okay(Seq())
-    val res = for {
-      ss <- read
-      h <- read3(ss)
-    } yield h
-
-    res should equal(Okay(None))
-  }
-
-  test("map, Reason 3") {
-    val ex = new Exception("er")
-    def read: Ch = Reason(ex)
-    val res = for {
-      ss <- read
-      h <- read3(ss)
+      h <- read2(ss)
     } yield h
 
     res should equal(Reason(ex))
   }
+  // the previous four tests show how to convert from an A to a B without losing your Reason :-)
 }
 
