@@ -185,5 +185,54 @@ class TestsInvolvingOption extends FunSuite with ShouldMatchers with Checking {
 
     res should equal(Reason(ex))
   }
+
+  def read3(ss: Seq[String]): Ch2 = {
+    val res = for {
+      h <- ss.headOption
+      if h != ""
+    } yield h
+    Okay(res)
+  }
+
+  test("map, Seq non-empty, head non-empty 3") {
+    def read: Ch = Okay(Seq("1st", "2nd"))
+    val res = for {
+      ss <- read      // Checked[Seq[String],    R]
+      h <- read3(ss)  // Checked[Option[String], R]
+    } yield h
+
+    res should equal(Okay(Some("1st")))
+  }
+
+  test("map, Seq non-empty, head empty 3") {
+    def read: Ch = Okay(Seq("", "2nd"))
+    val res = for {
+      ss <- read
+      h <- read3(ss)
+    } yield h
+
+    res should equal(Okay(None))
+  }
+
+  test("map, Seq empty 3") {
+    def read: Ch = Okay(Seq())
+    val res = for {
+      ss <- read
+      h <- read3(ss)
+    } yield h
+
+    res should equal(Okay(None))
+  }
+
+  test("map, Reason 3") {
+    val ex = new Exception("er")
+    def read: Ch = Reason(ex)
+    val res = for {
+      ss <- read
+      h <- read3(ss)
+    } yield h
+
+    res should equal(Reason(ex))
+  }
 }
 
