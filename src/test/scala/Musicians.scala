@@ -22,7 +22,7 @@ trait Musicians extends Checking {
 
   case class Musician(       name: String,
                             genre: Genre,
-                      instruments: Iterable[Instrument])
+                      instruments: Set[Instrument])
 
   object Musician {
     object checks {
@@ -43,7 +43,7 @@ trait Musicians extends Checking {
             throw new NoSuchElementException("unrecognised instrument: "+ s)
         }
         if (instruments exists(_ == panPipes)) Reason("plays the "+ panPipes)
-        else instruments toOkay
+        else instruments.toSet.toOkay
       }
       catch {
         case ex: NoSuchElementException => ex.getMessage toReason
