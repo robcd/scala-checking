@@ -1,7 +1,23 @@
+/*
+ * Copyright 2012 Latterfrosken Software Development Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import io.Source
 import org.lafros.scala.Checking
 /**
- *
+ * provides readFromFile method for converting each line of musicians.db (in project's root dir)
+ * into a Musician, with the aid of Checking.
  */
 trait Musicians extends Checking {
   type R = String
@@ -51,7 +67,8 @@ trait Musicians extends Checking {
     }
   }
 
-  def readFromFile(fname: String): Iterable[Checked[Musician, Iterable[String]]] = for {
+  // return type is Iterable[Checked[Musician, Iterable[String]]]
+  def readFromFile(fname: String) = for {
     line <- Source.fromFile(fname).getLines.toIterable
     tokens = line.split("\\,")
   } yield {
