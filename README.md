@@ -41,5 +41,4 @@ Artifacts
 ---------
 
 org.lafros artifacts in [Maven central repository](http://search.maven.org/#browse%7C238533119)  
-
 org.lafros artifacts in [Sonatype mirror](http://oss.sonatype.org/content/groups/public/org/lafros)
