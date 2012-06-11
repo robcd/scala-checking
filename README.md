@@ -33,9 +33,9 @@ Example code
 [`<*>` tests with multiple checks](scala-checking/blob/master/src/test/scala/AppFunctTestsWithChecks.scala)  
 [case-class tests](scala-checking/blob/master/src/test/scala/CaseClassTests.scala)  
 ['SaturdayNight' tests](scala-checking/blob/master/src/test/scala/SaturdayNightTests.scala)  
-[tests involving Option](scala-checking/blob/master/src/test/scala/TestsInvolvingOption.scala)  
-[Musicans](scala-checking/blob/master/src/test/scala/Musicians.scala)  
-[printMusicians](scala-checking/blob/master/src/test/scala/printMusicians.scala)
+[tests involving `Option`](scala-checking/blob/master/src/test/scala/TestsInvolvingOption.scala)  
+[`Musicans`](scala-checking/blob/master/src/test/scala/Musicians.scala)  
+[`printMusicians`](scala-checking/blob/master/src/test/scala/printMusicians.scala)
 
 Artifacts
 ---------
